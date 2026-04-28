@@ -6024,9 +6024,11 @@ KEYWORDS is a list of strings."
       (format "_%s" (regexp-opt keywords))
     (error "KEYWORDS must be a list of strings; got `%S'" keywords)))
 
-;; TODO 2026-04-06: The `denote-query-exclude-files-with-keywords' and
-;; the `denote-query-include-files-with-keywords' can be defined via a
-;; macro.
+(defun denote-query--filter-keywords (keywords include-p)
+  "Filter `denote-query--last-files' with KEYWORDS.
+If INCLUDE-P is non-nil, only include matches.  Otherwise exclude them."
+  (denote-query--filter-files (denote-query--keywords-as-regexp keywords) include-p))
+
 (defun denote-query-exclude-files-with-keywords (keywords)
   "Exclude files with KEYWORDS from current query buffer.
 
@@ -6038,19 +6040,17 @@ Interactively, KEYWORDS are read from the minibuffer using
    (or (denote--user-error-if-not-major-mode 'denote-query-mode)
        (list (denote-keywords-prompt "Exclude files with keywords")))
    denote-query-mode)
-  (denote--user-error-if-not-major-mode 'denote-query-mode)
-  (denote-query-exclude-files (denote-query--keywords-as-regexp keywords)))
+  (denote-query--filter-keywords keywords nil))
 
 (defun denote-query-only-include-files-with-keywords (keywords)
-  "Exclude files without KEYWORDS from current query buffer.
+  "Only show files with KEYWORDS in the current Denote query buffer.
 
 See `denote-query-exclude-files-with-keywords' for details."
   (interactive
    (or (denote--user-error-if-not-major-mode 'denote-query-mode)
        (list (denote-keywords-prompt "Only include files with keywords")))
    denote-query-mode)
-  (denote--user-error-if-not-major-mode 'denote-query-mode)
-  (denote-query-only-include-files (denote-query--keywords-as-regexp keywords)))
+  (denote-query--filter-keywords keywords :include))
 
 (defun denote-query-clear-all-filters ()
   "Run last search with the full set of files in the variable `denote-directory'.
