@@ -7124,8 +7124,8 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Wesley Harvey, Yann Dutrieux, Zhenxu Xu, alvmts, arsaber101,
   bplubell, bryanrinders, dulikiles, eum3l, experimental-code-86,
   ezchi, gnuhack, gvalson, jarofromel, leinfink (Henrik), l-o-l-h
-  (Lincoln), mattyonweb, maxbrieiev, mentalisttraceur, pmenair,
-  relict007, skissue.
+  (Lincoln), mattyonweb, maxbrieiev, mentalisttraceur, nescias,
+  pmenair, relict007, skissue.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Aleksandr Vityazev, Alex Griffin, Alex Hirschfeld, Alexis
