@@ -2782,6 +2782,26 @@ or `line', referring to what the function should retrieve."
   (denote--file-with-temp-buffer file
     (re-search-forward regexp nil t 1)))
 
+(defun denote--get-front-matter-value-no-indentation (component line file-type)
+  "Return the COMPONENT on LINE given the FILE-TYPE without any indentation."
+  (with-temp-buffer
+    (insert line)
+    (goto-char (point-min))
+    (when (re-search-forward (funcall (denote--get-component-key-regexp-function component) file-type) nil t 1)
+      (re-search-forward "\\s-*" (line-end-position) t)
+      (buffer-substring-no-properties (point) (line-end-position)))))
+
+(defun denote--rewrite-front-matter-line (component new-line file-type)
+  "Rewrite COMPONENT with NEW-LINE given the FILE-TYPE.
+Preserve the existing key and the spacing, if any, that follows it.
+Return non-nil if successful."
+  (when (re-search-forward (funcall (denote--get-component-key-regexp-function component) file-type) nil t 1)
+    (let ((new-value (denote--get-front-matter-value-no-indentation component new-line file-type)))
+      (re-search-forward "\\s-*" (line-end-position) t)
+      (delete-region (point) (line-end-position))
+      (insert new-value)
+      t)))
+
 ;; These are private front matter retrieval functions, working with a content parameter
 
 (defmacro denote--define-retrieve-front-matter-from-content (component scope)
@@ -4034,10 +4054,7 @@ related."
         (save-restriction
           (widen)
           (goto-char (point-min))
-          (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
-            (goto-char (line-beginning-position))
-            (insert new-keywords-line)
-            (delete-region (point) (line-end-position))
+          (when (denote--rewrite-front-matter-line 'keywords new-keywords-line file-type)
             (when save-buffer (save-buffer))))))))
 
 (defun denote--component-has-value-p (component value)
@@ -4261,10 +4278,7 @@ prompt to confirm the rewriting of the front matter."
                           ((memq component components-to-add)
                            (insert (concat new-line "\n")))
                           ((memq component components-to-modify)
-                           (re-search-forward (funcall component-key-regexp-function file-type) nil t 1)
-                           (goto-char (line-beginning-position))
-                           (insert new-line)
-                           (delete-region (point) (line-end-position))
+                           (denote--rewrite-front-matter-line component new-line file-type)
                            (goto-char (line-beginning-position 2)))
                           (t
                            (goto-char (line-beginning-position 2))))))))))))))
