@@ -4734,6 +4734,17 @@ keyword.
 The documentation of the package also includes a demonstration:
 <https://codeberg.org/treflip/denote-wordcloud>.
 
+** Use the ~denote-lint~ package
+:PROPERTIES:
+:CUSTOM_ID: h:d4b42d2a-c626-4195-ac0e-68352d0b918a
+:END:
+
+The ~denote-lint~ package by Peter Smith provides facilities that
+check all Denote files for correctness. This is about the consistency
+between file name and front matter, the validity of links, and
+related. The package defines multiple warning levels, each with its
+own semantics. Learn more here: <https://github.com/psmith1303/denote-lint>.
+
 * Extending Denote
 :PROPERTIES:
 :CUSTOM_ID: h:8ed2bb6f-b5be-4711-82e9-8bee5bb06ece
