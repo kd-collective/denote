@@ -2784,23 +2784,27 @@ or `line', referring to what the function should retrieve."
 
 (defun denote--get-front-matter-value-no-indentation (component line file-type)
   "Return the COMPONENT on LINE given the FILE-TYPE without any indentation."
-  (with-temp-buffer
-    (insert line)
-    (goto-char (point-min))
-    (when (re-search-forward (funcall (denote--get-component-key-regexp-function component) file-type) nil t 1)
-      (re-search-forward "\\s-*" (line-end-position) t)
-      (buffer-substring-no-properties (point) (line-end-position)))))
+  (when-let* ((key-regexp-fn (denote--get-component-key-regexp-function component))
+              (regexp (funcall key-regexp-fn file-type)))
+    (with-temp-buffer
+      (insert line)
+      (goto-char (point-min))
+      (when (re-search-forward regexp nil t 1)
+        (re-search-forward "\\s-*" (line-end-position) t)
+        (buffer-substring-no-properties (point) (line-end-position))))))
 
 (defun denote--rewrite-front-matter-line (component new-line file-type)
   "Rewrite COMPONENT with NEW-LINE given the FILE-TYPE.
 Preserve the existing key and the spacing, if any, that follows it.
 Return non-nil if successful."
-  (when (re-search-forward (funcall (denote--get-component-key-regexp-function component) file-type) nil t 1)
-    (let ((new-value (denote--get-front-matter-value-no-indentation component new-line file-type)))
-      (re-search-forward "\\s-*" (line-end-position) t)
-      (delete-region (point) (line-end-position))
-      (insert new-value)
-      t)))
+  (when-let* ((key-regexp-fn (denote--get-component-key-regexp-function component))
+              (regexp (funcall key-regexp-fn file-type))
+              (_ (re-search-forward regexp nil t 1))
+              (new-value (denote--get-front-matter-value-no-indentation component new-line file-type)))
+    (re-search-forward "\\s-*" (line-end-position) t)
+    (delete-region (point) (line-end-position))
+    (insert new-value)
+    t))
 
 ;; These are private front matter retrieval functions, working with a content parameter
 
